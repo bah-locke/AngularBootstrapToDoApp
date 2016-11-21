@@ -16,7 +16,7 @@
 			
 			background: linear-gradient( white, #E0FFFF);
 			background-repeat: no-repeat;
-  		background-attachment: fixed;
+  			background-attachment: fixed;
 		}
 		
 		table, th , td  {
@@ -107,8 +107,7 @@
 
 		   
 		   $scope.addTodo = function(){
-		   	$scope.today = new Date();
- 				$scope.autoDate = $scope.today.getMonth()+1+'/'+$scope.today.getDate()+'/'+$scope.today.getFullYear() +' '+(($scope.today.getHours() > 12) ? ($scope.today.getHours() - 12).toString() : $scope.today.getHours()) +':'+ (($scope.today.getMinutes() / 10) >= 1 ? $scope.today.getMinutes() : '0'+$scope.today.getMinutes()) + ' ' + (($scope.today.getHours() / 12) >= 1 ? 'PM' : 'AM');
+		   		$scope.autoDate = $scope.castDate();
 				
 				if($scope.name && $scope.description){
 					$scope.todos.push({"id": ++$scope.id, "name": $scope.name, "description":$scope.description, "date":$scope.autoDate});
@@ -124,15 +123,13 @@
 		   }
 		   
 		   $scope.addDoneRow = function(data) {
-		   	$scope.today = new Date();
-		   	$scope.autoDate = $scope.today.getMonth()+1+'/'+$scope.today.getDate()+'/'+$scope.today.getFullYear() +' '+(($scope.today.getHours() > 12) ? ($scope.today.getHours() - 12).toString() : $scope.today.getHours()) +':'+ (($scope.today.getMinutes() / 10) >= 1 ? $scope.today.getMinutes() : '0'+$scope.today.getMinutes()) + ' ' + (($scope.today.getHours() / 12) >= 1 ? 'PM' : 'AM');
+		   	$scope.autoDate = $scope.castDate();
 				
 				/*data.name = document.getElementById("editName").value;
 				data.description = document.getElementById("editDescription").value;*/
 				data.date = $scope.autoDate;
-
 				$scope.finishedList.push(data);
-				$scope.todos.splice($scope.todos.indexOf(data.id),1);
+				$scope.todos.splice($scope.todos.indexOf(data),1);
 				
 				localStorage.removeItem('finishedList');
 				localStorage.removeItem('toDoItems');
@@ -143,11 +140,18 @@
 				
 				$scope.checkVars = document.getElementsByClassName("checks");
 				
-				for (var i = 0; i <= $scope.checkVars.length; i++)
+				//reset todo list checks to unchecked
+				for (var i = 0; i < $scope.checkVars.length; i++)
 				{
 					
 					$scope.checkVars[i].checked = false;
 					
+				}
+
+				//reset todo ids after removing one and adding to done list
+				for (var i = 0; i < $scope.todos.length; i++) 
+				{
+					$scope.todos[i].id = i + 1;
 				}
 			
 		   }              
@@ -177,12 +181,12 @@
 		   
 		   $scope.saveTodos = function(data) {
 		   	
-					$scope.regexDate = /^[0-1]?[1-9](\/|\-|\\)[0-1]?[1-9](\/|\-|\\)[0-9]{4} ?([0-1]?[0-9]:[0-5][0-9] [aA || pP][mM])?$/;
+					$scope.regexDate = /^[0-1]?[0-9](\/|\-|\\)[0-3]?[0-9](\/|\-|\\)[0-9]{4} ?([0-1]?[0-9]:[0-5][0-9] [aA || pP][mM])?$/;
 					
 					if( !$scope.regexDate.test(document.getElementsByClassName("editDate")[data.id - 1].value) )
 					{
 						
-						alert("Please enter the appropriate date format mm/dd/yyyy pmPM, mm\\dd\\yyyy pmPM, mm-dd-yyyy pmPM.");
+						alert("Please enter the appropriate date-time format mm/dd/yyyy 00:00 pmPM, mm\\dd\\yyyy 00:00 pmPM, or mm-dd-yyyy 00:00 pmPM.");
 					
 					} else {
 						
@@ -202,6 +206,13 @@
 						document.getElementsByClassName("saveButton")[data.id - 1].type = "hidden";
 						document.getElementsByClassName("editButton")[data.id - 1].type = "submit";
 					}
+		   }
+
+		   $scope.castDate = function() {
+				$scope.today = new Date();
+				$scope.autoDate = $scope.today.getMonth()+1+'/'+$scope.today.getDate()+'/'+$scope.today.getFullYear() +' '+((($scope.today.getHours() > 12) ? ($scope.today.getHours() - 12).toString() : $scope.today.getHours()) == 0 ? 12 : (($scope.today.getHours() > 12) ? ($scope.today.getHours() - 12).toString() : $scope.today.getHours())) +':'+ (($scope.today.getMinutes() / 10) >= 1 ? $scope.today.getMinutes() : '0'+$scope.today.getMinutes()) + ' ' + (($scope.today.getHours() / 12) >= 1 ? 'PM' : 'AM');
+
+				return $scope.autoDate;
 		   }
 		});
 	</script>
@@ -254,7 +265,7 @@
 					<span class="hideDate">{{ x.date }}</span>
 				</td>
 				<td class="form-group">
-					<input class="form-control checks" type="checkbox" ng-click="addDoneRow(x)">
+					<input class="checks" type="checkbox" ng-click="addDoneRow(x)">
 				</td>
 				<td class="noBorder"><input type="submit" class="editButton btn-default" ng-click="editTodos(x)" value="Edit"></td>
 				<td class="noBorder"><input type="hidden" class="saveButton btn-default" ng-click="saveTodos(x)" value="Save"></td>
