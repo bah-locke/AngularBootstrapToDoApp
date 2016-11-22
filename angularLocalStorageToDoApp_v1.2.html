@@ -83,14 +83,31 @@
 	<script>
                 
 		var app = angular.module('myApp', []);
-		app.controller('customersCtrl', function($scope) {
-			$scope.todos = [];
-			$scope.finishedList = [];
-
-		   //Used to clear the todo list
-		   //localStorage.removeItem('finishedList');
-		   //localStorage.removeItem('toDoItems');
 		
+		app.directive('contenteditable', function() {
+		    return {
+		      restrict: 'A',
+		      require: '?ngModel',
+		      link: function(scope, element, attrs, ngModel) {
+		        if(!ngModel) return;
+
+		        // Specify how UI should be updated
+		        ngModel.$render = function() {
+		          element.html(ngModel.$viewValue);
+		        };
+
+		        // Listen for change events to enable binding
+		        element.on('blur keyup change', function() {
+		      	  var regex = /(<br\ ?\/?>)+/;
+		          ngModel.$setViewValue(element.html().replace(regex, ''));
+		        });
+		      }
+		    };
+		});
+		
+		app.controller('customersCtrl',['$scope', '$window', function($scope, $window ) {
+			$scope.todos 		= [];
+			$scope.finishedList = [];
 		   
 		   if(JSON.parse(localStorage.getItem('toDoItems')))
 		   {
@@ -105,12 +122,34 @@
 		   
 		   $scope.id = localStorage.getItem('toDoItemID');
 
-		   
+		   $scope.selectText = function() {
+		   		if ( !($window.getSelection().isCollapsed) ) {
+		   			var rangeWordBounds = $window.getSelection().getRangeAt(0).getBoundingClientRect();
+		   			var el = document.createElement('div');
+
+		   			el.style.position = 'absolute';
+					el.style.left = (rangeWordBounds.left) + 'px';
+					el.style.top = (rangeWordBounds.top - 25) + 'px';
+		   			el.style.height = rangeWordBounds.height + 'px';
+		   			el.style.width = rangeWordBounds.width + 'px';
+		   			el.style.background = 'lightblue';
+		   			el.setAttribute('id','editorTool');
+
+		   			document.body.appendChild(el);
+		   		} else {
+		   			var el = document.querySelector('#editorTool');
+
+		   			if ( el ) {
+		   				el.parentNode.remove(el);
+		   			}
+		   		}
+		   }
+
 		   $scope.addTodo = function(){
 		   		$scope.autoDate = $scope.castDate();
-				
+
 				if($scope.name && $scope.description){
-					$scope.todos.push({"id": ++$scope.id, "name": $scope.name, "description":$scope.description, "date":$scope.autoDate});
+					$scope.todos.push({"id": ++$scope.id, "name": $scope.name, "description": $scope.description, "date": $scope.autoDate});
 					$scope.name = "";
 					$scope.description = "";
 					 
@@ -214,7 +253,7 @@
 
 				return $scope.autoDate;
 		   }
-		});
+		}]);
 	</script>
 </head>
 <body>
@@ -227,7 +266,7 @@
 			<h4><b>Enter To Do:</b></h4>
 			<div class="form-group">
 				<label for="name">Name:</label><input type="text" id="name" class="form-control" ng-model="name">
-				<label for="description">Description:</label><textarea id="description" class="form-control" style="position:relative; left: .5%;" ng-model="description" rows="1"></textarea><br>
+				<label for="description">Description:</label><p contenteditable id="description" class="form-control" style="position:relative; left: .5%; height: 100px;" rows="1" ng-model="description" ng-mouseup="selectText()" ng-mouseleave="selectText()"></p>
 				<input  class="btn-default" type="submit" value="Add">
 			</div>
 		</form><br><br>
