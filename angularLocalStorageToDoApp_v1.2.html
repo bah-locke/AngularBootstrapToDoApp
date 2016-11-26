@@ -104,10 +104,28 @@
 		      }
 		    };
 		});
-		
-		app.controller('customersCtrl',['$scope', '$window', function($scope, $window ) {
+
+		app.directive('editortool', function() {
+		    return {
+		      restrict: 'E',
+		      require: '?ngModel',
+		      template: '<button>B</button><button>I</button><button>U</button>'
+		      /*link: function(scope, element, attrs) {
+
+		        // Listen for change events to enable binding
+		       /* element.on('blur keyup change', function() {
+		      	  var regex = /(<br\ ?\/?>)+/;
+		          ngModel.$setViewValue(element.html().replace(regex, ''));
+		        });
+		      }*/
+		    };
+		});
+
+		app.controller('customersCtrl',['$scope', '$window', '$compile', function($scope, $window, $compile ) {
 			$scope.todos 		= [];
 			$scope.finishedList = [];
+			$scope.selectionStart;
+			$scope.selectionEnd;
 		   
 		   if(JSON.parse(localStorage.getItem('toDoItems')))
 		   {
@@ -123,25 +141,71 @@
 		   $scope.id = localStorage.getItem('toDoItemID');
 
 		   $scope.selectText = function() {
-		   		if ( !($window.getSelection().isCollapsed) ) {
+		   		if ( ($window.getSelection().getRangeAt(0).startOffSet != $scope.selectionStart || $window.getSelection().getRangeAt(0).endOffset != $scope.selectionEnd) && !($window.getSelection().isCollapsed) ) {
+
+		   			var editToolEl = document.querySelector('#editorTool');
+		   			if ( editToolEl ) {
+		   				document.body.removeChild(editToolEl);
+		   			}
+
 		   			var rangeWordBounds = $window.getSelection().getRangeAt(0).getBoundingClientRect();
 		   			var el = document.createElement('div');
+		   			var formatButtons = '<button ng-click="addBold()">B</button><button ng-click="addItalic()">I</button><button ng-click="addUnderline()">U</button>';
 
+		   			$scope.selectionStart = $window.getSelection().getRangeAt(0).startOffSet;
+		   			$scope.selectionEnd   = $window.getSelection().getRangeAt(0).endOffSet;
 		   			el.style.position = 'absolute';
 					el.style.left = (rangeWordBounds.left) + 'px';
-					el.style.top = (rangeWordBounds.top - 25) + 'px';
-		   			el.style.height = rangeWordBounds.height + 'px';
-		   			el.style.width = rangeWordBounds.width + 'px';
-		   			el.style.background = 'lightblue';
+					el.style.top = (rangeWordBounds.top - 30) + 'px';
+		   			el.style.height = '30px';
+		   			el.style.width = '80px';
 		   			el.setAttribute('id','editorTool');
+		   			el.innerHTML = formatButtons;
+		   			$compile(el)($scope);
 
 		   			document.body.appendChild(el);
-		   		} else {
-		   			var el = document.querySelector('#editorTool');
+		   		} 
+		   }
 
-		   			if ( el ) {
-		   				el.parentNode.remove(el);
-		   			}
+		   $scope.addBold = function() {
+		   		var sel      		= $window.getSelection();
+		   		var range    		= sel.getRangeAt(0);
+		   		//var htmlContents	= sel.anchorNode.innerHTML;
+		   		//var newContents 		= '<strong>' + htmlContents + '</strong>';
+		   		var spanEl   		= document.createElement('strong');
+
+		   		//spanEl.innerHTML = newContents;
+		   		range.surroundContents(spanEl);
+		   		//range.insertNode(spanEl);
+		   }
+
+		   $scope.addItalic = function() {
+		   		var sel      		= $window.getSelection();
+		   		var range    		= sel.getRangeAt(0);
+		   		//var htmlContents	= sel.anchorNode.innerHTML;
+		   		//var newContents 		= '<strong>' + htmlContents + '</strong>';
+		   		var spanEl   		= document.createElement('em');
+
+		   		//spanEl.innerHTML = newContents;
+		   		range.surroundContents(spanEl);
+		   		//range.insertNode(spanEl);
+		   }
+
+		   $scope.addUnderline = function() {
+		   		var sel      		= $window.getSelection();
+		   		var range    		= sel.getRangeAt(0);
+		   		//var htmlContents	= sel.anchorNode.innerHTML;
+		   		//var newContents 		= '<strong>' + htmlContents + '</strong>';
+		   		var spanEl   		= document.createElement('u');
+
+		   		//spanEl.innerHTML = newContents;
+		   		range.surroundContents(spanEl);
+		   		//range.insertNode(spanEl);
+		   }
+		   $scope.hideEditorTool = function() {
+		   		if ( document.querySelector('#editorTool') && ($window.getSelection().isCollapsed)) {
+		   			var el = document.querySelector('#editorTool');
+		   			document.body.removeChild(el);
 		   		}
 		   }
 
@@ -259,14 +323,14 @@
 <body>
 	<div ng-app="myApp" class="container" style="height: 700px; width: 800px;" ng-controller="customersCtrl" ng-init="country = ''; rangeAmount = '';">
 		<div class="jumbotron gumbo">
-			<h2>Mini To Do App</h2>
+			<h2>Mini To Do App with Text Editor</h2>
 		</div>
 		<br>
 		<form ng-submit="addTodo()" role="form">
 			<h4><b>Enter To Do:</b></h4>
 			<div class="form-group">
 				<label for="name">Name:</label><input type="text" id="name" class="form-control" ng-model="name">
-				<label for="description">Description:</label><p contenteditable id="description" class="form-control" style="position:relative; left: .5%; height: 100px;" rows="1" ng-model="description" ng-mouseup="selectText()" ng-mouseleave="selectText()"></p>
+				<label for="description">Description:</label><p contenteditable id="description" class="form-control" style="position:relative; left: .5%; height: 100px;" rows="1" ng-model="description" ng-mouseup="selectText()" ng-click="hideEditorTool()"></p>
 				<input  class="btn-default" type="submit" value="Add">
 			</div>
 		</form><br><br>
