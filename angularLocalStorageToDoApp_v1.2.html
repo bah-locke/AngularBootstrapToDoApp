@@ -106,30 +106,6 @@
 		    };
 		});
 
-		app.directive('editortool', function() {
-		    return {
-		      restrict: 'E',
-		      require: '?ngModel',
-		      template: '<button>B</button><button>I</button><button>U</button>'
-		      /*link: function(scope, element, attrs) {
-
-		        // Listen for change events to enable binding
-		       /* element.on('blur keyup change', function() {
-		      	  var regex = /(<br\ ?\/?>)+/;
-		          ngModel.$setViewValue(element.html().replace(regex, ''));
-		        });
-		      }*/
-		    };
-		});
-
-		app.filter('format', function ($sce) {
-		   return function (input) {
-		      var el = document.createElement("div");
-		      el.innerHTML = input;
-		      return $sce.trustAsHtml(el.innerHTML);
-		   };
-		});
-
 		app.controller('customersCtrl',['$scope', '$window', '$compile', '$sce', function($scope, $window, $compile, $sce ) {
 			$scope.todos 		= [];
 			$scope.finishedList = [];
@@ -166,6 +142,7 @@
 		   			el.style.position = 'absolute';
 					el.style.left = (rangeWordBounds.left) + 'px';
 					el.style.top = (rangeWordBounds.top - 30) + 'px';
+					el.style.bottom = rangeWordBounds.bottom;
 		   			el.style.height = '30px';
 		   			el.style.width = '80px';
 		   			el.setAttribute('id','editorTool');
@@ -179,37 +156,25 @@
 		   $scope.addBold = function() {
 		   		var sel      		= $window.getSelection();
 		   		var range    		= sel.getRangeAt(0);
-		   		//var htmlContents	= sel.anchorNode.innerHTML;
-		   		//var newContents 		= '<strong>' + htmlContents + '</strong>';
 		   		var spanEl   		= document.createElement('strong');
 
-		   		//spanEl.innerHTML = newContents;
 		   		range.surroundContents(spanEl);
-		   		//range.insertNode(spanEl);
 		   }
 
 		   $scope.addItalic = function() {
 		   		var sel      		= $window.getSelection();
 		   		var range    		= sel.getRangeAt(0);
-		   		//var htmlContents	= sel.anchorNode.innerHTML;
-		   		//var newContents 		= '<strong>' + htmlContents + '</strong>';
 		   		var spanEl   		= document.createElement('em');
 
-		   		//spanEl.innerHTML = newContents;
 		   		range.surroundContents(spanEl);
-		   		//range.insertNode(spanEl);
 		   }
 
 		   $scope.addUnderline = function() {
 		   		var sel      		= $window.getSelection();
 		   		var range    		= sel.getRangeAt(0);
-		   		//var htmlContents	= sel.anchorNode.innerHTML;
-		   		//var newContents 		= '<strong>' + htmlContents + '</strong>';
 		   		var spanEl   		= document.createElement('u');
 
-		   		//spanEl.innerHTML = newContents;
 		   		range.surroundContents(spanEl);
-		   		//range.insertNode(spanEl);
 		   }
 		   $scope.hideEditorTool = function() {
 		   		if ( document.querySelector('#editorTool') && ($window.getSelection().isCollapsed)) {
@@ -239,8 +204,6 @@
 		   $scope.addDoneRow = function(data) {
 		   	$scope.autoDate = $scope.castDate();
 				
-				/*data.name = document.getElementById("editName").value;
-				data.description = document.getElementById("editDescription").value;*/
 				data.date = $scope.autoDate;
 				$scope.finishedList.push(data);
 				$scope.todos.splice($scope.todos.indexOf(data),1);
