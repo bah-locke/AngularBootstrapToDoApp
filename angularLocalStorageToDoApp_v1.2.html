@@ -80,9 +80,10 @@
 		
 	</style>
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-sanitize.js"></script>
 	<script>
                 
-		var app = angular.module('myApp', []);
+		var app = angular.module('myApp', ['ngSanitize']);
 		
 		app.directive('contenteditable', function() {
 		    return {
@@ -121,7 +122,15 @@
 		    };
 		});
 
-		app.controller('customersCtrl',['$scope', '$window', '$compile', function($scope, $window, $compile ) {
+		app.filter('format', function ($sce) {
+		   return function (input) {
+		      var el = document.createElement("div");
+		      el.innerHTML = input;
+		      return $sce.trustAsHtml(el.innerHTML);
+		   };
+		});
+
+		app.controller('customersCtrl',['$scope', '$window', '$compile', '$sce', function($scope, $window, $compile, $sce ) {
 			$scope.todos 		= [];
 			$scope.finishedList = [];
 			$scope.selectionStart;
@@ -213,6 +222,7 @@
 		   		$scope.autoDate = $scope.castDate();
 
 				if($scope.name && $scope.description){
+
 					$scope.todos.push({"id": ++$scope.id, "name": $scope.name, "description": $scope.description, "date": $scope.autoDate});
 					$scope.name = "";
 					$scope.description = "";
@@ -223,6 +233,7 @@
 				}else{
 					alert("Must enter both a To Do Name and Description.");
 				}
+
 		   }
 		   
 		   $scope.addDoneRow = function(data) {
@@ -361,7 +372,7 @@
 				</td>
 				<td class="form-group">
 					<input class="editDescription form-control input-sm" ng-model="editDescription" type="hidden" value="{{x.description}}">
-					<span class="hideDescription">{{ x.description }}</span>
+					<span class="hideDescription" ng-bind-html="x.description"></span>
 				</td>
 				<td class="form-group">
 					<input class="editDate form-control input-sm" ng-model="editDate" type="hidden" value="{{ x.date }}">
