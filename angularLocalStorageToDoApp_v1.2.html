@@ -139,7 +139,7 @@
 
 		   			$scope.selectionStart = $window.getSelection().getRangeAt(0).startOffSet;
 		   			$scope.selectionEnd   = $window.getSelection().getRangeAt(0).endOffSet;
-		   			el.style.position = 'absolute';
+		   			el.style.position = 'fixed';
 					el.style.left = (rangeWordBounds.left) + 'px';
 					el.style.top = (rangeWordBounds.top - 30) + 'px';
 					el.style.bottom = rangeWordBounds.bottom;
