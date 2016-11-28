@@ -216,6 +216,30 @@
 		   		range.insertNode(el);
 		   }
 
+		   $scope.addOrderedList = function() {
+		   		var sel      		= $window.getSelection();
+		   		var range    		= sel.getRangeAt(0);
+		   		var el   			= document.createElement('ol');
+		   		var childEl			= document.createElement('li');
+				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
+
+		   		el.innerHTML = xmlAsString;
+		   		range.deleteContents();
+		   		range.insertNode(el);
+		   }
+
+		   $scope.addUnorderedList = function() {
+		   		var sel      		= $window.getSelection();
+		   		var range    		= sel.getRangeAt(0);
+		   		var el   			= document.createElement('ul');
+		   		var childEl			= document.createElement('li');
+				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
+
+		   		el.innerHTML = xmlAsString;
+		   		range.deleteContents();
+		   		range.insertNode(el);
+		   }
+
 		   $scope.hideEditorTool = function() {
 		   		if ( document.querySelector('#editorTool') && ($window.getSelection().isCollapsed)) {
 		   			var el = document.querySelector('#editorTool');
@@ -344,7 +368,7 @@
 			<h4><b>Enter To Do:</b></h4>
 			<div class="form-group">
 				<label for="name">Name:</label><input type="text" id="name" class="form-control" ng-model="name">
-				<label for="description">Description:</label><p contenteditable id="description" class="form-control" style="position:relative; left: .5%; height: 100px;" rows="1" ng-model="description" ng-mouseup="selectText()"></p>
+				<label for="description">Description (highlight text you wish to edit):</label><p contenteditable id="description" class="form-control" style="position:relative; left: .5%; height: 100px;" rows="1" ng-model="description" ng-mouseup="selectText()"></p>
 				<input  class="btn-default" type="submit" value="Add">
 			</div>
 		</form><br><br>
