@@ -142,7 +142,7 @@
 
 		   			var rangeWordBounds = $window.getSelection().getRangeAt(0).getBoundingClientRect();
 		   			var el = document.createElement('div');
-		   			var formatButtons = '<button ng-click="addBold()">B</button><button ng-click="addItalic()">I</button><button ng-click="addUnderline()">U</button>';
+		   			var formatButtons = '<button ng-click="addBold()"><strong>B</strong></button><button ng-click="addItalic()"><em>I</em></button><button ng-click="addUnderline()"><u>U</u></button><button ng-click="addMark()"><mark>M</mark></button><button ng-click="addDelete()"><del>D</del></button>';
 
 		   			$scope.selectionStart = $window.getSelection().getRangeAt(0).startOffSet;
 		   			$scope.selectionEnd   = $window.getSelection().getRangeAt(0).endOffSet;
@@ -151,7 +151,7 @@
 					el.style.top = (rangeWordBounds.top - 30) + 'px';
 					el.style.bottom = rangeWordBounds.bottom;
 		   			el.style.height = '30px';
-		   			el.style.width = '80px';
+		   			el.style.width = '200px';
 		   			el.setAttribute('id','editorTool');
 		   			el.innerHTML = formatButtons;
 		   			$compile(el)($scope);
@@ -163,7 +163,7 @@
 		   $scope.addBold = function() {
 		   		var sel      		= $window.getSelection();
 		   		var range    		= sel.getRangeAt(0);
-		   		var el   		= document.createElement('strong');
+		   		var el   			= document.createElement('strong');
 				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
 
 		   		el.innerHTML = xmlAsString;
@@ -174,7 +174,7 @@
 		   $scope.addItalic = function() {
 		   		var sel      		= $window.getSelection();
 		   		var range    		= sel.getRangeAt(0);
-		   		var el   		= document.createElement('em');
+		   		var el   			= document.createElement('em');
 				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
 				
 		   		el.innerHTML = xmlAsString;
@@ -185,13 +185,37 @@
 		   $scope.addUnderline = function() {
 		   		var sel      		= $window.getSelection();
 		   		var range    		= sel.getRangeAt(0);
-		   		var el   		= document.createElement('u');
+		   		var el   			= document.createElement('u');
 				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
 				
 		   		el.innerHTML = xmlAsString;
 		   		range.deleteContents();
 		   		range.insertNode(el);
 		   }
+
+
+		   $scope.addMark = function() {
+		   		var sel      		= $window.getSelection();
+		   		var range    		= sel.getRangeAt(0);
+		   		var el   			= document.createElement('mark');
+				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
+
+		   		el.innerHTML = xmlAsString;
+		   		range.deleteContents();
+		   		range.insertNode(el);
+		   }
+
+		   $scope.addDelete = function() {
+		   		var sel      		= $window.getSelection();
+		   		var range    		= sel.getRangeAt(0);
+		   		var el   			= document.createElement('del');
+				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
+
+		   		el.innerHTML = xmlAsString;
+		   		range.deleteContents();
+		   		range.insertNode(el);
+		   }
+
 		   $scope.hideEditorTool = function() {
 		   		if ( document.querySelector('#editorTool') && ($window.getSelection().isCollapsed)) {
 		   			var el = document.querySelector('#editorTool');
