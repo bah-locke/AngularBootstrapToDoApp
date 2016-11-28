@@ -142,7 +142,7 @@
 
 		   			var rangeWordBounds = $window.getSelection().getRangeAt(0).getBoundingClientRect();
 		   			var el = document.createElement('div');
-		   			var formatButtons = '<button ng-click="addBold()"><strong>B</strong></button><button ng-click="addItalic()"><em>I</em></button><button ng-click="addUnderline()"><u>U</u></button><button ng-click="addMark()"><mark>M</mark></button><button ng-click="addDelete()"><del>D</del></button>';
+		   			var formatButtons = '<button ng-click="addBold()"><strong>B</strong></button><button ng-click="addItalic()"><em>I</em></button><button ng-click="addUnderline()"><u>U</u></button><button ng-click="addMark()"><mark>M</mark></button><button ng-click="addDelete()"><del>D</del></button><button ng-click="addOrderedList()">OL</button><button ng-click="addUnorderedList()">UL</button>';
 
 		   			$scope.selectionStart = $window.getSelection().getRangeAt(0).startOffSet;
 		   			$scope.selectionEnd   = $window.getSelection().getRangeAt(0).endOffSet;
@@ -151,7 +151,7 @@
 					el.style.top = (rangeWordBounds.top - 30) + 'px';
 					el.style.bottom = rangeWordBounds.bottom;
 		   			el.style.height = '30px';
-		   			el.style.width = '200px';
+		   			el.style.width = '250px';
 		   			el.setAttribute('id','editorTool');
 		   			el.innerHTML = formatButtons;
 		   			$compile(el)($scope);
@@ -221,21 +221,31 @@
 		   		var range    		= sel.getRangeAt(0);
 		   		var el   			= document.createElement('ol');
 		   		var childEl			= document.createElement('li');
-				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
+		   		var regex 				= new RegExp(/<(?!\/?(strong|em|mark|del|>)(?=>|\s.*>))\/?.*?>/ig);
+				var xmlAsString 		= new XMLSerializer().serializeToString( range.cloneContents() );
+				var finalString			= xmlAsString.replace(regex, ' ');
 
-		   		el.innerHTML = xmlAsString;
+				console.log(finalString);
+				finalString.split(" ").map(function(listEl) {
+					el.innerHTML += '<li>' + listEl + '</li>';
+				});
 		   		range.deleteContents();
 		   		range.insertNode(el);
 		   }
 
 		   $scope.addUnorderedList = function() {
-		   		var sel      		= $window.getSelection();
-		   		var range    		= sel.getRangeAt(0);
-		   		var el   			= document.createElement('ul');
-		   		var childEl			= document.createElement('li');
-				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
+		   		var sel      			= $window.getSelection();
+		   		var range    			= sel.getRangeAt(0);
+		   		var el   				= document.createElement('ul');
+		   		var childEl				= document.createElement('li');
+		   		var regex 				= new RegExp(/<(?!\/?(strong|em|mark|del|>)(?=>|\s.*>))\/?.*?>/ig);
+				var xmlAsString 		= new XMLSerializer().serializeToString( range.cloneContents() );
+				var finalString			= xmlAsString.replace(regex, ' ');
 
-		   		el.innerHTML = xmlAsString;
+				console.log(finalString);
+				finalString.split(" ").map(function(listEl) {
+					el.innerHTML += '<li>' + listEl + '</li>';
+				});
 		   		range.deleteContents();
 		   		range.insertNode(el);
 		   }
