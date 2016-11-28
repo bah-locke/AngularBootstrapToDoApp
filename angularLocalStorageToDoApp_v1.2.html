@@ -362,13 +362,14 @@
 	<div ng-app="myApp" class="container" ng-controller="customersCtrl" ng-init="country = ''; rangeAmount = '';" ng-click="hideEditorTool()">
 		<div class="jumbotron gumbo text-center">
 			<h2>Mini To Do App with Text Editor</h2>
+			<h4>( highlight desciption text you wish to edit )</h4>
 		</div>
 		<br>
 		<form ng-submit="addTodo()" role="form">
 			<h4><b>Enter To Do:</b></h4>
 			<div class="form-group">
 				<label for="name">Name:</label><input type="text" id="name" class="form-control" ng-model="name">
-				<label for="description">Description (highlight text you wish to edit):</label><p contenteditable id="description" class="form-control" style="position:relative; left: .5%; height: 100px;" rows="1" ng-model="description" ng-mouseup="selectText()"></p>
+				<label for="description">Description:</label><p contenteditable id="description" class="form-control" style="position:relative; left: .5%; height: 100px;" rows="1" ng-model="description" ng-mouseup="selectText()"></p>
 				<input  class="btn-default" type="submit" value="Add">
 			</div>
 		</form><br><br>
