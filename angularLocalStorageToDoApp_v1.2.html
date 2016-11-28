@@ -163,25 +163,34 @@
 		   $scope.addBold = function() {
 		   		var sel      		= $window.getSelection();
 		   		var range    		= sel.getRangeAt(0);
-		   		var spanEl   		= document.createElement('strong');
+		   		var el   		= document.createElement('strong');
+				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
 
-		   		range.surroundContents(spanEl);
+		   		el.innerHTML = xmlAsString;
+		   		range.deleteContents();
+		   		range.insertNode(el);
 		   }
 
 		   $scope.addItalic = function() {
 		   		var sel      		= $window.getSelection();
 		   		var range    		= sel.getRangeAt(0);
-		   		var spanEl   		= document.createElement('em');
-
-		   		range.surroundContents(spanEl);
+		   		var el   		= document.createElement('em');
+				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
+				
+		   		el.innerHTML = xmlAsString;
+		   		range.deleteContents();
+		   		range.insertNode(el);
 		   }
 
 		   $scope.addUnderline = function() {
 		   		var sel      		= $window.getSelection();
 		   		var range    		= sel.getRangeAt(0);
-		   		var spanEl   		= document.createElement('u');
-
-		   		range.surroundContents(spanEl);
+		   		var el   		= document.createElement('u');
+				var xmlAsString 	= new XMLSerializer().serializeToString( range.cloneContents() );
+				
+		   		el.innerHTML = xmlAsString;
+		   		range.deleteContents();
+		   		range.insertNode(el);
 		   }
 		   $scope.hideEditorTool = function() {
 		   		if ( document.querySelector('#editorTool') && ($window.getSelection().isCollapsed)) {
