@@ -56,7 +56,17 @@
 			font-weight: 900;
 		}
 		
-		.todoRows td:hover {
+		.editDescription {
+			position: relative;
+			top: 5px;
+		}
+
+		.checks {
+			position: relative;
+			top: 5px;			
+		}
+
+		.checks:hover {
 			cursor: pointer;
 		}
 		
@@ -102,7 +112,8 @@
 		    };
 		});
 
-		app.controller('customersCtrl',['$scope', '$window', '$compile', '$sce', function($scope, $window, $compile, $sce ) {
+		app.controller('customersCtrl',['$scope', '$window', '$compile', '$sce', function($scope, $window, $compile, $sce ){
+
 			$scope.todos 		= [];
 			$scope.finishedList = [];
 			$scope.selectionStart;
@@ -245,7 +256,7 @@
 				document.getElementsByClassName("hideName")[data.id - 1].style.visibility = "hidden";
 				document.getElementsByClassName("editName")[data.id - 1].type = "text";
 				document.getElementsByClassName("hideDescription")[data.id - 1].style.visibility = "hidden";
-				document.getElementsByClassName("editDescription")[data.id - 1].type = "text";
+				document.getElementsByClassName("editDescription")[data.id - 1].style.display = "block";
 				document.getElementsByClassName("hideDate")[data.id - 1].style.visibility = "hidden";
 				document.getElementsByClassName("editDate")[data.id - 1].type = "date";
 				document.getElementsByClassName("saveButton")[data.id - 1].type = "submit";
@@ -264,7 +275,7 @@
 					} else {
 						
 						$scope.todos[data.id - 1].name = document.getElementsByClassName("editName")[data.id - 1].value;
-						$scope.todos[data.id - 1].description = document.getElementsByClassName("editDescription")[data.id - 1].value;
+						$scope.todos[data.id - 1].description = document.getElementsByClassName("editDescription")[data.id - 1].innerHTML;
 						$scope.todos[data.id - 1].date = document.getElementsByClassName("editDate")[data.id - 1].value;
 							
 						localStorage.setItem('toDoItems', JSON.stringify($scope.todos));
@@ -273,7 +284,7 @@
 						document.getElementsByClassName("hideName")[data.id - 1].style.visibility = "visible";
 						document.getElementsByClassName("editName")[data.id - 1].type = "hidden";
 						document.getElementsByClassName("hideDescription")[data.id - 1].style.visibility = "visible";
-						document.getElementsByClassName("editDescription")[data.id - 1].type = "hidden";
+						document.getElementsByClassName("editDescription")[data.id - 1].style.display = "none";
 						document.getElementsByClassName("hideDate")[data.id - 1].style.visibility = "visible";
 						document.getElementsByClassName("editDate")[data.id - 1].type = "hidden";
 						document.getElementsByClassName("saveButton")[data.id - 1].type = "hidden";
@@ -291,7 +302,7 @@
 	</script>
 </head>
 <body>
-	<div ng-app="myApp" class="container" ng-controller="customersCtrl" ng-init="country = ''; rangeAmount = '';">
+	<div ng-app="myApp" class="container" ng-controller="customersCtrl" ng-init="country = ''; rangeAmount = '';" ng-click="hideEditorTool()">
 		<div class="jumbotron gumbo text-center">
 			<h2>Mini To Do App with Text Editor</h2>
 		</div>
@@ -300,7 +311,7 @@
 			<h4><b>Enter To Do:</b></h4>
 			<div class="form-group">
 				<label for="name">Name:</label><input type="text" id="name" class="form-control" ng-model="name">
-				<label for="description">Description:</label><p contenteditable id="description" class="form-control" style="position:relative; left: .5%; height: 100px;" rows="1" ng-model="description" ng-mouseup="selectText()" ng-click="hideEditorTool()"></p>
+				<label for="description">Description:</label><p contenteditable id="description" class="form-control" style="position:relative; left: .5%; height: 100px;" rows="1" ng-model="description" ng-mouseup="selectText()"></p>
 				<input  class="btn-default" type="submit" value="Add">
 			</div>
 		</form><br><br>
@@ -323,14 +334,14 @@
 				<th>Complete?</th>
 				<th hidden></th>
 			</tr>
-			<tr class="todoRows" ng-repeat="x in todos | filter:item | limitTo: rangeAmount track by $index" >
+			<tr ng-repeat="x in todos | filter:item | limitTo: rangeAmount track by $index" >
 				<td hidden>{{ x.id }}</td>
 				<td class="form-group">
 					<input class="editName form-control input-sm" type="hidden" value="{{ x.name }}">
 					<span class="hideName">{{ x.name }}</span>
 				</td>
 				<td class="form-group">
-					<input class="editDescription form-control input-sm" ng-model="editDescription" type="hidden" value="{{x.description}}">
+					<p contenteditable="true" class="editDescription form-control input-sm" ng-model="editDescription" ng-bind-html="x.description" style="display: none;" ng-mouseup="selectText()"></p>
 					<span class="hideDescription" ng-bind-html="x.description"></span>
 				</td>
 				<td class="form-group">
